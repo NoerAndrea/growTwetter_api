@@ -34,10 +34,8 @@ model Tweet{
   content    String @db.VarChar(255)
   type       TypeTweet @default(TWEET)
 
-  deleted     Boolean @db.Boolean @default(false)
   createdAt   DateTime @db.Timestamp() @map("created_at") @default(now())
   updatedAt   DateTime @db.Timestamp() @map("updated_at") @updatedAt
-  deletedAt   DateTime? @db.Timestamp() @map("deleted_at")
 
   //relation user
   userId  String @db.Uuid @map("user_id") 
@@ -53,11 +51,13 @@ model Like{
   id      String @id @db.Uuid @default(uuid())
 
   //relations
-  userId  String @db.Uuid @map("user_id") @unique
+  userId  String @db.Uuid @map("user_id")
   user Users @relation(fields: [userId], references: [id])
 
-  tweetId String @db.Uuid @map("tweet_id") @unique
+  tweetId String @db.Uuid @map("tweet_id")
   tweet Tweet @relation(fields: [tweetId], references: [id])
+
+  @@unique([tweetId, userId])
 }
 
 enum TypeTweet {

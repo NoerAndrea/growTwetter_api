@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from "express";
-import { prismaConnection } from "../database/prismaConnection";
 import { Users } from "@prisma/client";
+import { Request, Response } from "express";
+import { prismaConnection } from "../database/prismaConnection";
 
 export class TweetController {
   public static async create(req: Request, res: Response) {
@@ -39,7 +39,15 @@ export class TweetController {
           userId: user.id,
         },
         include: {
-          user: true,
+          likes: {
+            include: {
+              user: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
         },
       });
       return res.status(200).json({
@@ -60,27 +68,23 @@ export class TweetController {
       const { tweetId } = req.params;
       const { content, user } = req.body;
 
-      const tweetIsFromTheUser = await prismaConnection.tweet.findFirst({
+      const tweetIsFromTheUser = await prismaConnection.tweet.findUnique({
         where: {
           id: tweetId,
           userId: user.id,
-        },
-        include: {
-          user: true,
-        },
+        }
       });
 
       if (!tweetIsFromTheUser) {
-        return res.status(400).json({
+        return res.status(404).json({
           ok: false,
-          message: "Invalid tweet.",
+          message: "Tweet not found.",
         });
       }
+
       const updateTweet = await prismaConnection.tweet.update({
-        where: { id: tweetId },
-        data: {
-          content: content,
-        },
+        where: { id: tweetIsFromTheUser.id },
+        data: { content },
       });
 
       return res.status(200).json({
@@ -101,19 +105,17 @@ export class TweetController {
       const { tweetId } = req.params;
       const { user } = req.body;
 
-      const tweetIsFromTheUser = await prismaConnection.tweet.findFirst({
+      const tweetIsFromTheUser = await prismaConnection.tweet.findUnique({
         where: {
           id: tweetId,
-          userId: user.id,
-        },
-        include: {
-          user: true,
-        },
+          userId: user.id
+        }
       });
+
       if (!tweetIsFromTheUser) {
-        return res.status(400).json({
+        return res.status(404).json({
           ok: false,
-          message: "Invalid tweet.",
+          message: "Tweet not found.",
         });
       }
 
@@ -122,6 +124,7 @@ export class TweetController {
           id: tweetId,
         },
       });
+
       return res.status(200).json({
         ok: true,
         message: "Tweet deleted successfully.",

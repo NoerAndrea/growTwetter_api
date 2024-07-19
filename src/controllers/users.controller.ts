@@ -6,7 +6,20 @@ export class UsersController {
     try {
       const { name, email, username, password } = req.body;
 
-      const newUser = await prismaConnection.users.create({
+      const existingUser = await prismaConnection.users.findFirst({
+        where: { 
+          OR: [{ email }, { username }]
+        },
+      });
+
+      if (existingUser) {
+        return res.status(400).json({
+          ok: false,
+          message: "Email or username already in use.",
+        });
+      }
+
+      await prismaConnection.users.create({
         data: {
           name,
           email,
@@ -14,7 +27,6 @@ export class UsersController {
           password,
         },
       });
-      console.log(newUser);
 
       return res.status(201).json({
         ok: true,
@@ -31,6 +43,7 @@ export class UsersController {
   public static async list(req: Request, res: Response) {
     try {
       const users = await prismaConnection.users.findMany({
+        where: { deleted: false },
         orderBy: {
           createdAt: "desc",
         },
@@ -126,6 +139,8 @@ export class UsersController {
         where: { id: userId, deleted: false },
         data: { deleted: true, deletedAt: new Date() },
       });
+
+      
       return res.status(200).json({
         ok: true,
         message: "Successfully delete user.",

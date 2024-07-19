@@ -11,6 +11,7 @@ export class AuthController {
         where: {
           email: email,
           password: password,
+          deleted: false
         },
       });
 

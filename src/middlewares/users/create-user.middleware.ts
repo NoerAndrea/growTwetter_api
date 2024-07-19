@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { prismaConnection } from "../../database/prismaConnection";
 
 export class CreateUserMiddleware {
   public static async validade(
@@ -36,25 +35,7 @@ export class CreateUserMiddleware {
         message: "Enter a password with at least 6 characters.",
       });
     }
-
-    try {
-      const existingUser = await prismaConnection.users.findUnique({
-        where: { email },
-      });
-
-      if (existingUser) {
-        return res.status(400).json({
-          ok: false,
-          message: "Email already in use.",
-        });
-      }
-    } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        message: "Internal server error.",
-      });
-    }
-
+    
     next();
   }
 }
