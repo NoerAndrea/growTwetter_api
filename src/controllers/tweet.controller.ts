@@ -43,17 +43,52 @@ export class TweetController {
             include: {
               user: {
                 select: {
-                  name: true
-                }
-              }
-            }
-          }
+                  name: true,
+                },
+              },
+            },
+          },
         },
       });
       return res.status(200).json({
         ok: true,
         user: user,
         tweets: tweets,
+      });
+    } catch (err) {
+      return res.status(500).json({
+        ok: false,
+        message: "Internal server error.",
+      });
+    }
+  }
+
+  public static async listAll(req: Request, res: Response) {
+    try {
+      const tweets = await prismaConnection.tweet.findMany({
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: {
+            select: {
+              username: true,
+              name: true,
+            },
+          },
+          likes: {
+            include: {
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return res.status(200).json({
+        ok: true,
+        data: tweets,
       });
     } catch (err) {
       return res.status(500).json({
@@ -72,7 +107,7 @@ export class TweetController {
         where: {
           id: tweetId,
           userId: user.id,
-        }
+        },
       });
 
       if (!tweetIsFromTheUser) {
@@ -108,8 +143,8 @@ export class TweetController {
       const tweetIsFromTheUser = await prismaConnection.tweet.findUnique({
         where: {
           id: tweetId,
-          userId: user.id
-        }
+          userId: user.id,
+        },
       });
 
       if (!tweetIsFromTheUser) {
