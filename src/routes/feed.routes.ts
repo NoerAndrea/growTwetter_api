@@ -6,7 +6,11 @@ export class FeedRoutes {
   public static execute(): Router {
     const router = Router();
 
-    router.get("/tweetsAll", TweetController.listAll);
+    router.get(
+      "/tweetsAll",
+      [AuthMiddleware.validate],
+      TweetController.listAll
+    );
 
     return router;
   }

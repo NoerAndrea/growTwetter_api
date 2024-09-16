@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,55 +6,71 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 //model
-model Users{
-  id        String @id @db.Uuid @default(uuid())
-  name      String @db.VarChar(255)
-  email     String @db.VarChar(255) @unique 
-  username  String @db.VarChar(255) @unique
-  password  String @db.Text
+model Users {
+  id       String @id @default(uuid()) @db.Uuid
+  name     String @db.VarChar(255)
+  email    String @unique @db.VarChar(255)
+  username String @unique @db.VarChar(255)
+  password String @db.Text
 
-  authToken String? @db.Text @map("auth_token")
+  authToken String? @map("auth_token") @db.Text
 
-  deleted   Boolean @db.Boolean @default(false)
-  createdAt DateTime @db.Timestamp() @map("created_at") @default(now())
-  updatedAt DateTime @db.Timestamp() @map("updated_at") @updatedAt
-  deletedAt DateTime? @db.Timestamp() @map("deleted_at")
+  deleted   Boolean   @default(false) @db.Boolean
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp()
 
   //relations 1-N
-  tweets  Tweet[]
-  likes   Like[]
+  tweets Tweet[]
+  likes  Like[]
 
   @@map("users")
 }
 
-model Tweet{
-  id         String @id @db.Uuid @default(uuid())
-  content    String @db.VarChar(255)
-  type       TypeTweet @default(TWEET)
+model Tweet {
+  id      String    @id @default(uuid()) @db.Uuid
+  content String    @db.VarChar(255)
+  type    TypeTweet @default(TWEET)
 
-  createdAt   DateTime @db.Timestamp() @map("created_at") @default(now())
-  updatedAt   DateTime @db.Timestamp() @map("updated_at") @updatedAt
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp()
 
   //relation user
-  userId  String @db.Uuid @map("user_id") 
-  user Users @relation(fields: [userId], references: [id])
+  userId String @map("user_id") @db.Uuid
+  user   Users  @relation(fields: [userId], references: [id])
 
   //relations 1-N
   likes Like[]
 
- @@map("tweets")
+  replies Reply[] @relation("TweetOne")
+
+  tweet Reply? @relation("ReplyToTweet")
+
+  @@map("tweets")
 }
 
-model Like{
-  id      String @id @db.Uuid @default(uuid())
+model Reply {
+  id           String @id @default(uuid()) @db.Uuid
+  idTweetOne   String @map("id_tweet_one") @db.Uuid
+  idTweetReply String @unique @map("id_tweet_reply") @db.Uuid
+
+  tweetOne   Tweet @relation(name: "TweetOne", fields: [idTweetOne], references: [id])
+  tweetReply Tweet @relation(name: "ReplyToTweet", fields: [idTweetReply], references: [id])
+
+  @@map("replies")
+}
+
+model Like {
+  id String @id @default(uuid()) @db.Uuid
 
   //relations
-  userId  String @db.Uuid @map("user_id")
-  user Users @relation(fields: [userId], references: [id])
+  userId String @map("user_id") @db.Uuid
+  user   Users  @relation(fields: [userId], references: [id])
 
-  tweetId String @db.Uuid @map("tweet_id")
-  tweet Tweet @relation(fields: [tweetId], references: [id])
+  tweetId String @map("tweet_id") @db.Uuid
+  tweet   Tweet  @relation(fields: [tweetId], references: [id])
 
   @@unique([tweetId, userId])
 }
@@ -64,4 +79,3 @@ enum TypeTweet {
   TWEET
   REPLY
 }
-
