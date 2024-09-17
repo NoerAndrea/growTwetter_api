@@ -26,6 +26,9 @@ model Users {
   tweets Tweet[]
   likes  Like[]
 
+  followedBy Follower[] @relation("followedBy")
+  following  Follower[] @relation("following")
+
   @@map("users")
 }
 
@@ -73,6 +76,17 @@ model Like {
   tweet   Tweet  @relation(fields: [tweetId], references: [id])
 
   @@unique([tweetId, userId])
+}
+
+model Follower {
+  id         String @id @default(uuid()) @db.Uuid
+  idUser     String @map("id_user") @db.Uuid
+  idFollower String @map("id_follower") @db.Uuid
+
+  user     Users @relation(name: "following", fields: [idUser], references: [id])
+  follower Users @relation(name: "followedBy", fields: [idFollower], references: [id])
+
+  @@map("followers")
 }
 
 enum TypeTweet {
