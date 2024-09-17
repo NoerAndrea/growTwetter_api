@@ -15,8 +15,6 @@ model Users {
   username String @unique @db.VarChar(255)
   password String @db.Text
 
-  authToken String? @map("auth_token") @db.Text
-
   deleted   Boolean   @default(false) @db.Boolean
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp()
