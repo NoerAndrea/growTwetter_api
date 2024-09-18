@@ -116,10 +116,8 @@ export class UsersController {
     try {
       const { userId } = req.params;
 
-      const userDeleted = await prismaConnection.users.update({
-        where: { id: userId, deleted: false },
-        data: { deleted: true, deletedAt: new Date() },
-      });
+      const service = new UserService();
+      const userDeleted = await service.deleteUser(userId);
 
       return res.status(200).json({
         ok: true,

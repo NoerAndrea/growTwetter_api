@@ -74,6 +74,16 @@ export class UserService {
     return userUpdated;
   }
 
+  public async deleteUser(id: string): Promise<Users> {
+    const userFound = await this.getUserById(id);
+
+    const userDeleted = await prismaConnection.users.update({
+      where: { id: userFound.id, deleted: false },
+      data: { deleted: true, deletedAt: new Date() },
+    });
+    return userDeleted;
+  }
+
   public async isUsernamerAlreadyExists(username: string): Promise<boolean> {
     const existingUsername = await prismaConnection.users.findFirst({
       where: {
