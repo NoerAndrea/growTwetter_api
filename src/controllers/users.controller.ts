@@ -49,22 +49,8 @@ export class UsersController {
 
   public static async list(req: Request, res: Response) {
     try {
-      const users = await prismaConnection.users.findMany({
-        where: { deleted: false },
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          username: true,
-          createdAt: true,
-          updatedAt: true,
-          deleted: true,
-          deletedAt: true,
-        },
-      });
+      const service = new UserService();
+      const users = await service.listUsers();
 
       return res.status(200).json({
         ok: true,

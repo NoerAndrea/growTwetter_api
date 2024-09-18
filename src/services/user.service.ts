@@ -2,13 +2,7 @@ import { Users } from "@prisma/client";
 import { prismaConnection } from "../database/prismaConnection";
 import { Bcryt } from "../libs/bcrypt.lib";
 import { HttpError } from "../errors/http.error";
-
-interface CreateUserDTO {
-  name: string;
-  email: string;
-  username: string;
-  password: string;
-}
+import { CreateUserDTO } from "../interrfaces/create-user.dto";
 
 export class UserService {
   public async createUser(input: CreateUserDTO): Promise<Users> {
@@ -31,6 +25,24 @@ export class UserService {
     });
 
     return newUser;
+  }
+
+  public async listUsers(): Promise<Users[]> {
+    const users = await prismaConnection.users.findMany({
+      where: { deleted: false },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        tweets: true,
+        likes: true,
+      },
+    });
+
+    if (users.length === 0) {
+      throw new HttpError("No users found", 404);
+    }
+    return users;
   }
 
   public async isUsernamerAlreadyExists(username: string): Promise<boolean> {
