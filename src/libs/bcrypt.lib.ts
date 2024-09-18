@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { HttpError } from "../errors/http.error";
 
 export class Bcryt {
   public async encoded(textPlain: string): Promise<string> {
@@ -8,7 +9,7 @@ export class Bcryt {
       throw new Error("BCRYPT_SALT env is required.");
     }
     if (isNaN(Number(salt))) {
-      throw new Error("BCRYPT_SALT should be a number.");
+      throw new HttpError("BCRYPT_SALT should be a number.", 500);
     }
 
     const textEncrypted = await bcrypt.hash(textPlain, Number(salt));

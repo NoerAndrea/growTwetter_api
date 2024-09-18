@@ -1,31 +1,41 @@
 import { Request, Response } from "express";
 import { prismaConnection } from "../database/prismaConnection";
+import { UserService } from "../services/user.service";
+import { onError } from "../utils/on-error.util";
 
 export class UsersController {
   public static async create(req: Request, res: Response) {
     try {
       const { name, email, username, password } = req.body;
 
-      const existingUser = await prismaConnection.users.findFirst({
+      /*const existingUser = await prismaConnection.users.findFirst({
         where: { 
           OR: [{ email }, { username }]
         },
-      });
+      });*/
 
-      if (existingUser) {
+      /*if (existingUser) {
         return res.status(400).json({
           ok: false,
           message: "Email or username already in use.",
         });
-      }
+      }*/
 
-      await prismaConnection.users.create({
+      /*await prismaConnection.users.create({
         data: {
           name,
           email,
           username,
           password,
         },
+      });*/
+
+      const service = new UserService();
+      const data = await service.createUser({
+        name,
+        email,
+        username,
+        password,
       });
 
       return res.status(201).json({
@@ -33,10 +43,7 @@ export class UsersController {
         message: "Student successfully registered.",
       });
     } catch (err) {
-      return res.status(500).json({
-        ok: false,
-        message: "An unexpected error occurred.",
-      });
+      return onError(err, res);
     }
   }
 
@@ -65,10 +72,7 @@ export class UsersController {
         users: users,
       });
     } catch (err) {
-      return res.status(500).json({
-        ok: false,
-        message: "An unexpected error occurred.",
-      });
+      return onError(err, res);
     }
   }
 
@@ -96,10 +100,7 @@ export class UsersController {
         student: userFound,
       });
     } catch (err) {
-      return res.status(500).json({
-        ok: false,
-        message: "An unexpected error occurred.",
-      });
+      return onError(err, res);
     }
   }
 
@@ -124,10 +125,7 @@ export class UsersController {
         userUpdated,
       });
     } catch (err) {
-      return res.status(500).json({
-        ok: false,
-        message: "An unexpected error occurred.",
-      });
+      return onError(err, res);
     }
   }
 
@@ -140,17 +138,13 @@ export class UsersController {
         data: { deleted: true, deletedAt: new Date() },
       });
 
-      
       return res.status(200).json({
         ok: true,
         message: "Successfully delete user.",
         userDeleted,
       });
     } catch (err) {
-      return res.status(500).json({
-        ok: false,
-        message: "An unexpected error occurred.",
-      });
+      return onError(err, res);
     }
   }
 }
