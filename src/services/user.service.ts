@@ -3,6 +3,7 @@ import { prismaConnection } from "../database/prismaConnection";
 import { Bcryt } from "../libs/bcrypt.lib";
 import { HttpError } from "../errors/http.error";
 import { CreateUserDTO } from "../interrfaces/create-user.dto";
+import { UpdateUserDTO } from "../interrfaces/update-user.dto";
 
 export class UserService {
   public async createUser(input: CreateUserDTO): Promise<Users> {
@@ -45,6 +46,34 @@ export class UserService {
     return users;
   }
 
+  public async updateUserrs(input: UpdateUserDTO): Promise<Users> {
+    const userFound = await this.getUserById(input.userId);
+
+    if (input.username) {
+      const usernameExist = await this.isUsernamerAlreadyExists(input.username);
+
+      if (usernameExist) {
+        throw new HttpError("Username used, create another one.", 409);
+      }
+      userFound.username = input.username;
+    }
+
+    if (input.name) {
+      userFound.name = input.name;
+    }
+
+    const userUpdated = await prismaConnection.users.update({
+      where: {
+        id: userFound.id,
+      },
+      data: {
+        name: userFound.name,
+        username: userFound.username,
+      },
+    });
+    return userUpdated;
+  }
+
   public async isUsernamerAlreadyExists(username: string): Promise<boolean> {
     const existingUsername = await prismaConnection.users.findFirst({
       where: {
@@ -53,5 +82,20 @@ export class UserService {
       },
     });
     return Boolean(existingUsername);
+  }
+
+  public async getUserById(id: string): Promise<Users> {
+    const userUpdated = await prismaConnection.users.findUnique({
+      where: {
+        id,
+        deleted: false,
+      },
+    });
+
+    if (!userUpdated) {
+      throw new HttpError("No users found", 404);
+    }
+
+    return userUpdated;
   }
 }

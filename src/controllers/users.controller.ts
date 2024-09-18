@@ -47,7 +47,7 @@ export class UsersController {
     }
   }
 
-  public static async list(req: Request, res: Response) {
+  public static async list(_: Request, res: Response) {
     try {
       const service = new UserService();
       const users = await service.listUsers();
@@ -62,7 +62,7 @@ export class UsersController {
     }
   }
 
-  public static async get(req: Request, res: Response) {
+  /*public static async get(req: Request, res: Response) {
     try {
       const { userId } = req.params;
 
@@ -88,27 +88,24 @@ export class UsersController {
     } catch (err) {
       return onError(err, res);
     }
-  }
+  }*/
 
   public static async update(req: Request, res: Response) {
     try {
       const { userId } = req.params;
       const { name, username } = req.body;
 
-      const userUpdated = await prismaConnection.users.update({
-        where: {
-          id: userId,
-          deleted: false,
-        },
-        data: {
-          name: name,
-          username: username,
-        },
+      const service = new UserService();
+      const userUpdated = await service.updateUserrs({
+        userId,
+        name,
+        username,
       });
+
       return res.status(200).json({
         ok: true,
         message: "Successfully update user.",
-        userUpdated,
+        user: userUpdated,
       });
     } catch (err) {
       return onError(err, res);
