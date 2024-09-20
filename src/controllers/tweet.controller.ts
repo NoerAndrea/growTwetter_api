@@ -1,17 +1,26 @@
 import { Users } from "@prisma/client";
 import { Request, Response } from "express";
 import { prismaConnection } from "../database/prismaConnection";
+import { TweetService } from "../services/tweet.service";
+import { onError } from "../utils/on-error.util";
 
 export class TweetController {
   public static async create(req: Request, res: Response) {
     try {
-      const { user, content } = req.body;
+      const { user, content, type } = req.body;
 
-      const createTweet = await prismaConnection.tweet.create({
-        data: {
-          userId: (user as Users).id,
-          content: content,
-        },
+      if (!user || !content || !type) {
+        return res.status(400).json({
+          ok: false,
+          message: "Missing required fields: user, content, or type",
+        });
+      }
+
+      const service = new TweetService();
+      const createTweet = await service.createTweet({
+        content,
+        type,
+        userId: (user as Users).id,
       });
 
       return res.status(201).json({
@@ -19,13 +28,10 @@ export class TweetController {
         message: `Tweet successfully created for the user ${
           (user as Users).username
         }`,
-        createTweet,
+        tweet: createTweet,
       });
     } catch (err) {
-      return res.status(500).json({
-        ok: false,
-        message: "Internal server error",
-      });
+      return onError(err, res);
     }
   }
 
@@ -33,33 +39,23 @@ export class TweetController {
     try {
       const { user } = req.body;
 
-      const tweets = await prismaConnection.tweet.findMany({
-        orderBy: { createdAt: "desc" },
-        where: {
-          userId: user.id,
-        },
-        include: {
-          likes: {
-            include: {
-              user: {
-                select: {
-                  name: true,
-                },
-              },
-            },
-          },
-        },
-      });
+      if (!user || !(user as Users).id) {
+        return res.status(400).json({
+          ok: false,
+          message: "User not provided or invalid.",
+        });
+      }
+
+      const service = new TweetService();
+      const tweets = await service.listTweet((user as Users).id);
+
       return res.status(200).json({
         ok: true,
         user: user,
         tweets: tweets,
       });
     } catch (err) {
-      return res.status(500).json({
-        ok: false,
-        message: "Internal server error.",
-      });
+      return onError(err, res);
     }
   }
 
@@ -103,35 +99,27 @@ export class TweetController {
       const { tweetId } = req.params;
       const { content, user } = req.body;
 
-      const tweetIsFromTheUser = await prismaConnection.tweet.findUnique({
-        where: {
-          id: tweetId,
-          userId: user.id,
-        },
-      });
-
-      if (!tweetIsFromTheUser) {
-        return res.status(404).json({
+      if (!tweetId || !content || !user || !(user as Users).id) {
+        return res.status(400).json({
           ok: false,
-          message: "Tweet not found.",
+          message: "Missing required fields: tweetId, content, or user",
         });
       }
 
-      const updateTweet = await prismaConnection.tweet.update({
-        where: { id: tweetIsFromTheUser.id },
-        data: { content },
+      const service = new TweetService();
+      const updateTweet = await service.updateTweet({
+        tweetId,
+        content,
+        userId: (user as Users).id,
       });
 
       return res.status(200).json({
         ok: true,
         message: "Tweet updated successfully.",
-        updateTweet,
+        tweet: updateTweet,
       });
     } catch (err) {
-      return res.status(500).json({
-        ok: false,
-        message: "Internal server error.",
-      });
+      return onError(err, res);
     }
   }
 
@@ -140,36 +128,26 @@ export class TweetController {
       const { tweetId } = req.params;
       const { user } = req.body;
 
-      const tweetIsFromTheUser = await prismaConnection.tweet.findUnique({
-        where: {
-          id: tweetId,
-          userId: user.id,
-        },
-      });
-
-      if (!tweetIsFromTheUser) {
-        return res.status(404).json({
+      if (!tweetId || !user || !(user as Users).id) {
+        return res.status(400).json({
           ok: false,
-          message: "Tweet not found.",
+          message: "Missing required fields: tweetId or user",
         });
       }
 
-      const deleteTweet = await prismaConnection.tweet.delete({
-        where: {
-          id: tweetId,
-        },
+      const service = new TweetService();
+      const tweetDeleted = await service.deleteTweet({
+        tweetId,
+        userId: (user as Users).id,
       });
 
       return res.status(200).json({
         ok: true,
         message: "Tweet deleted successfully.",
-        deleteTweet,
+        tweet: tweetDeleted,
       });
     } catch (err) {
-      return res.status(500).json({
-        ok: false,
-        message: "Internal server error.",
-      });
+      return onError(err, res);
     }
   }
 }
