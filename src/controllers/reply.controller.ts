@@ -1,53 +1,34 @@
 import { Request, Response } from "express";
-import { prismaConnection } from "../database/prismaConnection";
-import { TypeTweet, Users } from "@prisma/client";
+import { ReplyService } from "../services/reply.service";
+import { Users } from "@prisma/client";
+import { onError } from "../utils/on-error.util";
 
 export class ReplyController {
   public static async create(req: Request, res: Response) {
     try {
-      const { user, content, tweetOriginalId } = req.body;
+      const { content, tweetOriginalId } = req.body;
+      const { user } = req.body;
 
-      const tweetFound = await prismaConnection.tweet.findUnique({
-        where: {
-          id: tweetOriginalId,
-          type: TypeTweet.TWEET,
-        },
-      });
-
-      if (!tweetFound) {
-        return res.status(404).json({
+      if (!content || !tweetOriginalId || !user || !(user as Users).id) {
+        return res.status(400).json({
           ok: false,
-          message: "Original Tweet not found",
+          message: "Missing required fields: content, tweetOriginalId, or user",
         });
       }
 
-      const tweetReplyCreated = await prismaConnection.tweet.create({
-        data: {
-          userId: (user as Users).id,
-          content: content,
-          type: TypeTweet.REPLY,
-        },
-      });
-
-      await prismaConnection.reply.create({
-        data: {
-          idTweetOne: tweetOriginalId,
-          idTweetReply: tweetReplyCreated.id,
-        },
+      const service = new ReplyService();
+      const result = await service.createReply({
+        user: user as Users,
+        content,
+        tweetOriginalId,
       });
 
       return res.status(201).json({
         ok: true,
-        message: `Reply successfully created for the user ${
-          (user as Users).username
-        }`,
-        tweet: tweetReplyCreated,
+        message: result.message,
       });
     } catch (err) {
-      return res.status(500).json({
-        ok: false,
-        message: "Internal server error",
-      });
+      return onError(err, res);
     }
   }
 }
