@@ -1,0 +1,1230 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "GrowTweeter",
+        "description": "Aplicação que remete a Rede Social [Growdev](https://www.growdev.com.br)",
+        "version": "v1.0"
+    },
+    "servers": [
+        {
+            "url":"http//localhost:8888",
+            "description": "Servidor local"
+        }
+    ],
+    "paths": {
+    "/users": {
+      "post": {
+        "summary": "Cria um novo usuário",
+        "description": "Cria um novo usuário com os dados fornecidos no corpo da solicitação.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Student successfully registered."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Campos ausentes ou inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Missing required fields: name, email, username, or password"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/list": {
+      "get": {
+        "summary": "Lista todos os usuários",
+        "description": "Retorna uma lista de todos os usuários cadastrados.",
+        "responses": {
+          "200": {
+            "description": "Lista de usuários retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully listed user."
+                    },
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "user123"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "John Doe"
+                          },
+                          "email": {
+                            "type": "string",
+                            "example": "john.doe@example.com"
+                          },
+                          "username": {
+                            "type": "string",
+                            "example": "johndoe"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/update/{userId}": {
+      "put": {
+        "summary": "Atualiza um usuário existente",
+        "description": "Atualiza os dados de um usuário existente pelo seu ID.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do usuário a ser atualizado"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John Smith"
+                  },
+                  "username": {
+                    "type": "string",
+                    "example": "johnsmith"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully update user."
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "user123"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "John Smith"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "johnsmith"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/delete/{userId}": {
+      "delete": {
+        "summary": "Exclui um usuário",
+        "description": "Remove um usuário existente pelo seu ID.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do usuário a ser excluído"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário excluído com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully delete user."
+                    },
+                    "userDeleted": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "user123"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "John Doe"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "john.doe@example.com"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "johndoe"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tweet/create": {
+      "post": {
+        "summary": "Cria um novo tweet",
+        "description": "Cria um novo tweet associado a um usuário.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "example": "This is a new tweet."
+                  },
+                  "type": {
+                    "type": "string",
+                    "example": "tweet"
+                  },
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "user123"
+                      },
+                      "username": {
+                        "type": "string",
+                        "example": "user_example"
+                      }
+                    }
+                  }
+                },
+                "required": ["content", "type", "user"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tweet criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Tweet successfully created for the user user_example"
+                    },
+                    "tweet": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "tweet123"
+                        },
+                        "content": {
+                          "type": "string",
+                          "example": "This is a new tweet."
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "tweet"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "user123"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-09-24T00:00:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Campos obrigatórios ausentes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Missing required fields: user, content, or type"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tweet/list": {
+      "get": {
+        "summary": "Lista tweets de um usuário específico",
+        "description": "Retorna todos os tweets de um usuário específico.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "user123"
+                      }
+                    }
+                  }
+                },
+                "required": ["user"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tweets listados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "user123"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "user_example"
+                        }
+                      }
+                    },
+                    "tweets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "tweet123"
+                          },
+                          "content": {
+                            "type": "string",
+                            "example": "This is a tweet."
+                          },
+                          "type": {
+                            "type": "string",
+                            "example": "tweet"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "user123"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2024-09-24T00:00:00Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Usuário inválido ou ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User not provided or invalid."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tweet/listAll": {
+      "get": {
+        "summary": "Lista todos os tweets",
+        "description": "Retorna todos os tweets existentes no sistema.",
+        "responses": {
+          "200": {
+            "description": "Tweets listados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "tweet123"
+                          },
+                          "content": {
+                            "type": "string",
+                            "example": "This is a tweet."
+                          },
+                          "type": {
+                            "type": "string",
+                            "example": "tweet"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "user123"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2024-09-24T00:00:00Z"
+                          },
+                          "user": {
+                            "type": "object",
+                            "properties": {
+                              "username": {
+                                "type": "string",
+                                "example": "user_example"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "User Example"
+                              }
+                            }
+                          },
+                          "likes": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "user": {
+                                  "type": "object",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string",
+                                      "example": "Liker Example"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server error."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tweet/update/{tweetId}": {
+      "put": {
+        "summary": "Atualiza um tweet existente",
+        "description": "Atualiza o conteúdo de um tweet existente com base no ID fornecido.",
+        "parameters": [
+          {
+            "name": "tweetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "tweet123"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "example": "Updated tweet content."
+                  },
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "user123"
+                      }
+                    }
+                  }
+                },
+                "required": ["content", "user"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tweet atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Tweet updated successfully."
+                    },
+                    "tweet": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "tweet123"
+                        },
+                        "content": {
+                          "type": "string",
+                          "example": "Updated tweet content."
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "user123"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-09-24T00:00:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Campos obrigatórios ausentes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Missing required fields: tweetId, content, or user"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tweet/delete/{tweetId}": {
+      "delete": {
+        "summary": "Exclui um tweet existente",
+        "description": "Exclui um tweet existente com base no ID fornecido.",
+        "parameters": [
+          {
+            "name": "tweetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "tweet123"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "user123"
+                      }
+                    }
+                  }
+                },
+                "required": ["user"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tweet excluído com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Tweet deleted successfully."
+                    },
+                    "tweet": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "tweet123"
+                        },
+                        "content": {
+                          "type": "string",
+                          "example": "This is a tweet."
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "user123"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-09-24T00:00:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Campos obrigatórios ausentes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Missing required fields: tweetId or user"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },  
+    "/reply/create": {
+      "post": {
+        "summary": "Cria uma nova resposta para um tweet",
+        "description": "Cria uma nova resposta (reply) associada a um tweet original. A requisição deve incluir o conteúdo da resposta, o ID do tweet original e os dados do usuário que está respondendo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "example": "This is a reply to the original tweet."
+                  },
+                  "tweetOriginalId": {
+                    "type": "string",
+                    "example": "tweet123"
+                  },
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "user123"
+                      },
+                      "username": {
+                        "type": "string",
+                        "example": "user_example"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "User Example"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "user@example.com"
+                      }
+                    }
+                  }
+                },
+                "required": ["content", "tweetOriginalId", "user"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Resposta criada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Reply successfully created."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Campos obrigatórios ausentes ou inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Missing required fields: content, tweetOriginalId, or user"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/like/create/{tweetId}": {
+      "post": {
+        "summary": "Cria um like para um tweet",
+        "description": "Cria um like associado a um tweet e a um usuário.",
+        "parameters": [
+          {
+            "name": "tweetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "tweet123"
+            },
+            "description": "ID do tweet que será curtido"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "user123"
+                      }
+                    },
+                    "description": "Informações do usuário que está curtindo o tweet"
+                  }
+                },
+                "required": ["user"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Like criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Like successfully created"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Campos obrigatórios ausentes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Missing required fields: tweetId or user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/follower/toggle/{userId}": {
+      "post": {
+        "summary": "Alterna o estado de seguir ou deixar de seguir um usuário",
+        "description": "Permite seguir ou deixar de seguir um usuário, dependendo do estado atual da relação de seguimento.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "user123"
+            },
+            "description": "ID do usuário que será seguido ou deixado de seguir"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "follower123"
+                      },
+                      "username": {
+                        "type": "string",
+                        "example": "follower_example"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Follower Example"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "follower@example.com"
+                      }
+                    },
+                    "description": "Informações do usuário que está tentando seguir ou deixar de seguir"
+                  }
+                },
+                "required": ["user"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Estado de seguimento alternado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully followed user user_example"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Campos obrigatórios ausentes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Missing required fields: userId or user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+        "post": {
+          "summary": "Realiza o login do usuário",
+          "description": "Autentica um usuário com base no email e senha fornecidos e retorna um token de autenticação.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "example": "user@example.com",
+                      "description": "Email do usuário"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "password123",
+                      "description": "Senha do usuário"
+                    }
+                  },
+                  "required": ["email", "password"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Login realizado com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "ok": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Aluno autenticado"
+                      },
+                      "authToken": {
+                        "type": "string",
+                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                      }
+                    },
+                    "required": ["ok", "message", "authToken"]
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Dados de login inválidos ou campos ausentes",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "ok": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Invalid email or password"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro interno do servidor",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "ok": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Internal server error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+    }      
+  },
+  "componentsUser": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "user123"
+          },
+          "username": {
+            "type": "string",
+            "example": "user_example"
+          },
+          "name": {
+            "type": "string",
+            "example": "User Example"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          }
+        }
+      }
+    }
+  },  
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
