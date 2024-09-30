@@ -1,9 +1,9 @@
 import { Users } from "@prisma/client";
-import { prismaConnection } from "../database/prismaConnection";
 import { Bcryt } from "../libs/bcrypt.lib";
 import { HttpError } from "../errors/http.error";
 import { CreateUserDTO } from "../interrfaces/create-user.dto";
 import { UpdateUserDTO } from "../interrfaces/update-user.dto";
+import prismaConnection from "../database/prismaConnection";
 /**
  * @class UserService
  * Serviço responsável por gerenciar usuários, incluindo criação, listagem, atualização e exclusão.

@@ -1,9 +1,9 @@
-import { prismaConnection } from "../database/prismaConnection";
 import { CreateTweetDTO } from "../interrfaces/create-tweet.dto";
 import { Tweet } from "@prisma/client";
 import { HttpError } from "../errors/http.error";
 import { DeleteTweetDTO } from "../interrfaces/delete-tweet.dto";
 import { UpdateTweetDTO } from "../interrfaces/update-tweet.dto";
+import prismaConnection from "../database/prismaConnection";
 /**
  * @class TweetService
  * Serviço responsável por gerenciar a criação, listagem, atualização e exclusão de tweets.
@@ -30,6 +30,10 @@ export class TweetService {
    */
   public async createTweet(input: CreateTweetDTO): Promise<Tweet> {
     const { userId, content, type } = input;
+
+    if (!content || content.trim() === "") {
+      throw new HttpError("Content cannot be empty", 400);
+    }
 
     const userExists = await this.isUsernamerAlreadyExists(input.userId);
 
